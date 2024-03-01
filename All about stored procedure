@@ -1,0 +1,101 @@
+--creating a table , using that table writing the stored procedure 
+Create Table tblProduct
+(
+ ProductId int primary key,
+ Name nvarchar(20),
+ UnitPrice int
+)
+
+--- to pouplate tblProduct, with sample data
+Insert into tblProduct Values(1, 'Books', 20)
+Insert into tblProduct Values(2, 'Pens', 14)
+Insert into tblProduct Values(3, 'Pencils', 11)
+Insert into tblProduct Values(4, 'Clips', 10)
+
+--Script to create table tblProductSales
+Create Table tblProductSales
+(
+ ProductId int,
+ QuantitySold int
+)
+
+--Script to pouplate tblProductSales, with sample data
+Insert into tblProductSales values(1, 10)
+Insert into tblProductSales values(3, 23)
+Insert into tblProductSales values(4, 21)
+Insert into tblProductSales values(2, 12)
+Insert into tblProductSales values(1, 13)
+Insert into tblProductSales values(3, 12)
+Insert into tblProductSales values(4, 13)
+Insert into tblProductSales values(1, 11)
+Insert into tblProductSales values(2, 12)
+Insert into tblProductSales values(1, 14)
+
+--writing stored procedure 
+--1) with input pararmeter 
+
+Create proc/procedure sptblproduct_sales
+@productid int 
+as
+Begin 
+     Select p.ProductId , p.Name ,s.Quantity 
+     from tblproduct as p
+     join tblproductSales as s
+     on p.ProductId = s.ProductId 
+     where p.ProductId = @productid
+End
+
+
+-- 3 ways to execute 
+-- 1 is the product id provided as input
+
+Execute sptblproduct_sales 1
+Exe sptblproduct_sales 1
+sptblproduct_sales 1
+
+
+--2) with output parameter 
+
+Alter/ create proc sptblproduct_sales
+@productid int , 
+@totalquantity int output/out
+As
+Begin 
+     select @totalquantity  = count(s.Quantity) from tblproduct as p 
+                              join tblproductSales as s
+                              on p.ProductId = s.ProductId 
+                              where @ProductID = @productid
+End
+
+-- to Execute it we have to define a variable and use out/output keyword 
+Declare @Totalquantity int 
+Execute spproduct_sales 1,@Totalquantity out
+Print @Totalquantity 
+
+--3 with return keyword 
+-- restriction return keyword will work only for integer value not for strings .
+-- 0 indicates success and other that 0 indicates failure
+
+Alter/ create proc sptblproduct_sales
+@productid int 
+As
+Begin 
+     select count(s.Quantity) from tblproduct as p 
+     join tblproductSales as s
+     on p.ProductId = s.ProductId 
+     where @ProductID = @productid
+End
+
+-- to execute we have to first declare the varibale and stored the return value in that to print 
+
+Declare @Totalquantity int
+Execute @Totalquantity =  sptblproduct_sales 1
+select / print @Totalquantity
+
+-- use [ With Encryption] if you want to secure the code of stored procedure
+-- never start the name of stored procedure as sp_ because sql server has its own stored procedure so don't confuse the system .
+-- stored procedure is used to eradicate the isse of writing query again n again 
+-- SP helps to reduce traffic network
+-- SP helps in Execution plan retention and reusability
+-- SP helps Code reusability and better maintainability 
+-- SP gives Better Security
