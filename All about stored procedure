@@ -92,6 +92,22 @@ Declare @Totalquantity int
 Execute @Totalquantity =  sptblproduct_sales 1
 select / print @Totalquantity
 
+
+-- if you have given input parameter in stored procedure , still you want that without giving any input parameter without any error youwill get the answer 
+-- here is the solution 
+
+Create proc/procedure sptblproduct_sales
+@productid int = null
+as
+Begin 
+     Select p.ProductId , p.Name ,s.Quantity 
+     from tblproduct as p
+     join tblproductSales as s
+     on p.ProductId = s.ProductId 
+     where @productid is null or p.productId =  @productid
+End
+
+--  Ablove code will help to make parameters optional 
 -- use [ With Encryption] if you want to secure the code of stored procedure
 -- never start the name of stored procedure as sp_ because sql server has its own stored procedure so don't confuse the system .
 -- stored procedure is used to eradicate the isse of writing query again n again 
